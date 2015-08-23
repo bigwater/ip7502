@@ -5,22 +5,23 @@ import hk.hku.cs.comp7502.util.NativeUIUtils;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JDesktopPane;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class MainFrame extends JFrame {
 	
@@ -66,32 +67,52 @@ public class MainFrame extends JFrame {
         
         openImageMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	createFrame();
+        		JFileChooser jFileChooser = new JFileChooser();
+        		jFileChooser.setCurrentDirectory(new File("~"));
+        		FileFilter fileFilter = new FileNameExtensionFilter("image file", new String[] {"jpg", "jpeg", "bmp", "png", "gif"});
+        		jFileChooser.setFileFilter(fileFilter);
+        		
+        		int result = jFileChooser.showOpenDialog(MainFrame.this);
+        		
+        		if (result == JFileChooser.APPROVE_OPTION) {
+        		    File selectedFile = jFileChooser.getSelectedFile();
+        		    URL fileURL = null;
+        		    ImageInternalFrame imgFrame = createFrame();
+					try {
+						fileURL = selectedFile.toURI().toURL();
+	    				OpenFileWorker worker = new OpenFileWorker(fileURL, imgFrame);
+	    				worker.execute();
+					} catch (MalformedURLException e1) {
+						imgFrame.dispose();
+						e1.printStackTrace();
+					}
+        		}
             }
         });
-        
         
         openURLMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				String urlString = JOptionPane.showInputDialog(MainFrame.this, "Please input the image URL (start with protocal)");
+				if (urlString == null) {
+					return;
+				}
+				
+				OpenFileWorker worker = null;
 				ImageInternalFrame imgFrame = createFrame();
-				
-				OpenFileWorker worker = new OpenFileWorker("http://pic2.zhimg.com/1dbe926e1_l.jpg", imgFrame);
-				worker.execute();
-				
-				/*worker.addPropertyChangeListener(new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-			             if ("progress".equals(evt.getPropertyName())) {
-			            	 System.out.println("fucking");
-			            	 //imgFrame.jb.setText("gegege");
-			            	 //((Graphics2D) imgFrame.getGraphics()).drawString("loading", 10, 10);
-			             }
-					}
-				});*/
-				
-				
-				//worker.cancel(true);
+				try {
+					worker = new OpenFileWorker(new URL(urlString), imgFrame);
+					worker.execute();
+				} catch (MalformedURLException e1) {
+					JOptionPane.showMessageDialog(MainFrame.this,
+						    "The URL is not supported",
+						    "Open Image",
+						    JOptionPane.WARNING_MESSAGE);
+					imgFrame.dispose();
+					e1.printStackTrace();
+				}
+
 			}
 		});
         

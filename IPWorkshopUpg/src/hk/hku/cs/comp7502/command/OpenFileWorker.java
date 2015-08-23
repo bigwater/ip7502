@@ -13,22 +13,25 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingWorker;
 
 public class OpenFileWorker extends SwingWorker<BufferedImage, Integer> {
-	private String url;
+	private URL url;
 	private ImageInternalFrame parentFrame;
 
 	private BufferedImage img;
 
-	public OpenFileWorker(String url, ImageInternalFrame parentFrame) {
+	private long timeConsumed = 0;
+	
+	public OpenFileWorker(URL url, ImageInternalFrame parentFrame) {
 		this.url = url;
 		this.parentFrame = parentFrame;
 	}
 
 	@Override
 	protected BufferedImage doInBackground() throws Exception {
+		long startTime = System.currentTimeMillis();
 		BufferedImage bufImage = null;
 
 		try {
-			bufImage = ImageIO.read(new URL(url));
+			bufImage = ImageIO.read(url);
 			img = bufImage;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -40,6 +43,9 @@ public class OpenFileWorker extends SwingWorker<BufferedImage, Integer> {
 			return colorToGray(bufImage);
 		}
 
+		long endTime = System.currentTimeMillis();
+		timeConsumed = endTime - startTime;
+		
 		return null;
 	}
 
@@ -54,10 +60,19 @@ public class OpenFileWorker extends SwingWorker<BufferedImage, Integer> {
 	@Override
 	protected void done() {
 		// Executed on the Event Dispatch Thread after the doInBackground method is finished.
-		ImagePanel parentImagePanel = parentFrame.getImagePanel();
-		if (img != null) {
+		if (img == null) {
+			parentFrame.getImgStatusLabel().setText("the url is not accessible");
+		} else {
+			ImagePanel parentImagePanel = parentFrame.getImagePanel();
+			parentFrame.getImgStatusLabel().setText("load time consumed = " + timeConsumed + " milliseconds");
+			//double defaultHeight = parentFrame.getImgStatusField().getSize().getHeight();
+			//parentFrame.getImgStatusField().setSize(parentFrame.getSize().width-5, (int) defaultHeight);
 			parentImagePanel.setBufImg(img);
+			parentFrame.repaint();
+			//parentImagePanel.repaint();
 		}
 	}
 
 }
+
+
