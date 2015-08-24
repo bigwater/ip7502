@@ -6,6 +6,8 @@ import hk.hku.cs.comp7502.util.ImageConverter;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.Hashtable;
 
@@ -17,6 +19,9 @@ import javax.swing.undo.UndoableEditSupport;
 public class ImagePanel extends JPanel implements StateEditable {
 	private static final long serialVersionUID = 8578099555635463985L;
 
+	private ImageInternalFrame parent;
+	private MainFrame mainFrame;
+	
 	static final String IMAGE_PANEL_STATE_KEY = "ImageKey";
 	private BufferedImage bufImg;
 
@@ -30,8 +35,30 @@ public class ImagePanel extends JPanel implements StateEditable {
 		undoableEditSupport.removeUndoableEditListener(undoableEditListener);
 	}
 
-	public ImagePanel() {
-		 //setSize(100,100);
+	public ImagePanel(MainFrame mainFrame, ImageInternalFrame parent) {
+		this.parent = parent;
+		this.mainFrame = mainFrame;
+		
+		addMouseMotionListener(new MouseMotionListener() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				int x = e.getX(); // width
+				int y = e.getY(); // height
+				
+				if (parent.isSelected() && bufImg != null) {
+					if (x >= 0 && x < bufImg.getWidth() && y >= 0 && y < bufImg.getHeight()) {
+						parent.getImgStatusLabel().setText(String.format("(w = %d, h = %d)", e.getX(), e.getY()));
+					} else {
+						parent.getImgStatusLabel().setText("");
+					}
+				}
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				
+			}
+		});
 	}
 
 	@Override
@@ -54,18 +81,20 @@ public class ImagePanel extends JPanel implements StateEditable {
 
 	@Override
 	public void storeState(Hashtable<Object, Object> state) {
-		System.out.println("store state");
+		//System.out.println("store state");
 		state.put(IMAGE_PANEL_STATE_KEY, new ImageDataModel(bufImg.getWidth(), bufImg.getHeight(), ImageConverter.toByteArray(bufImg)));
+		mainFrame.refreshUndoAndRedo(parent.getUndoManager());
 	}
 
 	@Override
 	public void restoreState(Hashtable<?, ?> state) {
-		System.out.println("restore state");
+		//System.out.println("restore state");
 		ImageDataModel storedImg = (ImageDataModel) state.get(IMAGE_PANEL_STATE_KEY);
 		if (storedImg != null) {
 			bufImg = storedImg.toBufferedImage();
 			repaint();
 		}
+		mainFrame.refreshUndoAndRedo(parent.getUndoManager());
 	}
 	
 }

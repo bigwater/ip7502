@@ -6,10 +6,12 @@ import hk.hku.cs.comp7502.config.WorkshopConfig;
 import hk.hku.cs.comp7502.ui.util.MenuCreator;
 import hk.hku.cs.comp7502.util.NativeUIUtils;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,12 +21,15 @@ import java.util.List;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.undo.UndoManager;
 
 public class MainFrame extends JFrame {
 	
@@ -32,11 +37,16 @@ public class MainFrame extends JFrame {
 	
     private JDesktopPane jdpDesktop;
     
+	private JLabel imgStatusLabel = new JLabel();
+
 	private static final long serialVersionUID = 3204111789442234205L;
 	List<ImageInternalFrame> imageDocumentList = new ArrayList<> ();
 	
 	private MenuCreator menuCreator;
 	private Configuration config = null;
+	
+	private JMenuItem undoItem, redoItem;
+	
 	public MainFrame(Configuration config) {
 		this.config = config;
 		menuCreator = new MenuCreator(this);
@@ -45,39 +55,74 @@ public class MainFrame extends JFrame {
 		setSize(screenSize.width, screenSize.height);
 		setJMenuBar(createMenuBar());
 		
-        jdpDesktop = new JDesktopPane() {
-			private static final long serialVersionUID = 1L;
+        jdpDesktop = new JDesktopPane();
+        
+        add(jdpDesktop, BorderLayout.CENTER);
+        
+        add(imgStatusLabel, BorderLayout.SOUTH);
+		
 
-			@Override
-            public Dimension getPreferredSize() {
-                return new Dimension(600, 600);
-            }
-        };
-        
-        setContentPane(jdpDesktop);
-        
         if (System.getProperty("os.name").startsWith("Mac OS X")) {
         	NativeUIUtils.enableOSXFullscreen(this);
         }
         
         setVisible(true);
 	}
-	
 
 	protected JMenu createEditMenu() {
 		JMenu editMenu = new JMenu("Edit");
-		JMenuItem undoItem = new JMenuItem("Undo");
-		JMenuItem redoItem = new JMenuItem("Redo");
-		return null;
+		undoItem = new JMenuItem("Undo");
+		redoItem = new JMenuItem("Redo");
+		editMenu.add(undoItem);
+		editMenu.add(redoItem);
+		setEnableUndoRedo(false, false);
+		return editMenu;
 	}
-    
+	
+	public void refreshUndoAndRedo(UndoManager manager) {
+		setEnableUndoRedo(manager.canUndo(), manager.canRedo());
+		for (ActionListener a : undoItem.getActionListeners()) {
+			undoItem.removeActionListener(a);
+		}
+		for (ActionListener a : redoItem.getActionListeners()) {
+			redoItem.removeActionListener(a);
+		}
+		
+		undoItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				manager.undo();
+			}
+		});
+		
+		redoItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				manager.redo();
+			}
+		});
+		
+	}
+	
+	public void setEnableUndoRedo(boolean u, boolean r) {
+		undoItem.setEnabled(u);
+		redoItem.setEnabled(r);
+		
+		KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+		undoItem.setAccelerator(stroke);
+		
+		KeyStroke stroke1 = KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+		redoItem.setAccelerator(stroke1);
+		
+	}
+	
     protected JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
+        fileMenu.setMnemonic(KeyEvent.VK_F);
         
         JMenuItem openImageMenuItem = new JMenuItem("Open Image from file...");
         JMenuItem openURLMenuItem = new JMenuItem("Open Image from URL...");
-        
         
         openImageMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -144,12 +189,13 @@ public class MainFrame extends JFrame {
         }
         
         menuBar.add(fileMenu);
+        menuBar.add(createEditMenu());
         return menuBar;
     }
 
     public ImageInternalFrame createFrame(String title) {
     	openedImageNumber++;
-        ImageInternalFrame fr = new ImageInternalFrame(title, openedImageNumber);
+        ImageInternalFrame fr = new ImageInternalFrame(title, openedImageNumber, this);
         jdpDesktop.add(fr);
         
         try {
@@ -161,4 +207,12 @@ public class MainFrame extends JFrame {
         return fr;
     }
     
+	public JLabel getImgStatusLabel() {
+		return imgStatusLabel;
+	}
+	
+	public void setImgStatusLabel(JLabel imgStatusLabel) {
+		this.imgStatusLabel = imgStatusLabel;
+	}
+
 }
