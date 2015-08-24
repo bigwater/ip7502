@@ -70,9 +70,11 @@ public class MenuCreator {
 			for (ProcessorConfig p : pc.getProcessors()) {
 				JMenuItem item = new JMenuItem(p.getName());
 				ProcessorAction listener = new ProcessorAction();
+				listener.setProcConfig(p);
 				listener.setProcessor(p.getImageProcessor());
 				listener.setProcessorName(p.getName());
 				listener.setPanel(mainFrame.getCurrentImagePanel());
+				
 				item.addActionListener(listener);
 				//itemActionMap.put(item, listener);
 				menu.add(item);

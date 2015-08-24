@@ -2,10 +2,12 @@ package hk.hku.cs.comp7502.config;
 
 import hk.hku.cs.comp7502.processor.ImageProcessor;
 
+import java.util.Map;
+
 public class ProcessorConfig {
 	private String name;
 	private String clazz;
-
+	private Map<String, String>[] inputs;
 	public String getName() {
 		return name;
 	}
@@ -33,4 +35,15 @@ public class ProcessorConfig {
 		
 		return proc;
 	}
+
+	public Map<String, String>[] getInputs() {
+		return inputs;
+	}
+
+	public void setInputs(Map<String, String>[] inputs) {
+		this.inputs = inputs;
+	}
+
+	
+	
 }
