@@ -32,7 +32,7 @@ public class OpenFileWorker extends SwingWorker<BufferedImage, Integer> {
 
 		try {
 			bufImage = ImageIO.read(url);
-			img = bufImage;
+			img = colorToGray(bufImage);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

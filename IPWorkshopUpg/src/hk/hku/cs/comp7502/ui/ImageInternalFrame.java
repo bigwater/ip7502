@@ -46,6 +46,12 @@ public class ImageInternalFrame extends JInternalFrame {
 	public JLabel getImgStatusLabel() {
 		return imgStatusLabel;
 	}
+	
+	@Override
+	public void dispose() {
+		System.out.println("fuck");
+		super.dispose();
+	}
 
 	
 }

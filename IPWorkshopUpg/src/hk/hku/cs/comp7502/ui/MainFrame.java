@@ -83,6 +83,10 @@ public class MainFrame extends JFrame {
 	    				OpenFileWorker worker = new OpenFileWorker(fileURL, imgFrame);
 	    				worker.execute();
 					} catch (MalformedURLException e1) {
+						JOptionPane.showMessageDialog(MainFrame.this,
+							    "The file is not accessible",
+							    "Open Image",
+							    JOptionPane.WARNING_MESSAGE);
 						imgFrame.dispose();
 						e1.printStackTrace();
 					}
