@@ -2,6 +2,7 @@ package hk.hku.cs.comp7502.ui;
 
 import hk.hku.cs.comp7502.config.Configuration;
 import hk.hku.cs.comp7502.config.WorkshopConfig;
+import hk.hku.cs.comp7502.config.WorkshopProcessorConfig;
 import hk.hku.cs.comp7502.ui.util.MenuCreator;
 import hk.hku.cs.comp7502.util.NativeUIUtils;
 import hk.hku.cs.comp7502.worker.OpenFileWorker;
@@ -17,7 +18,9 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
@@ -48,15 +51,18 @@ public class MainFrame extends JFrame {
 	private Configuration config = null;
 	
 	private JMenuItem undoItem, redoItem, saveAsMenuItem;
+	List<JMenu> workshopMenuList;
+	Map<JMenuItem, ProcessorAction> menuItemActionMap;
 	
+	private JMenuBar mainMenuBar;
 	public MainFrame(Configuration config) {
+		setTitle("workshop");
 		this.config = config;
 		menuCreator = new MenuCreator(this);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize(screenSize.width, screenSize.height);
-		setJMenuBar(createMenuBar());
-		
+
         jdpDesktop = new JDesktopPane();
         
         add(jdpDesktop, BorderLayout.CENTER);
@@ -67,7 +73,9 @@ public class MainFrame extends JFrame {
         if (System.getProperty("os.name").startsWith("Mac OS X")) {
         	NativeUIUtils.enableOSXFullscreen(this);
         }
-        
+		
+        setJMenuBar(createMenuBar());
+		
         setVisible(true);
 	}
 
@@ -119,7 +127,7 @@ public class MainFrame extends JFrame {
 	}
 	
     protected JMenuBar createMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
+        mainMenuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         fileMenu.setMnemonic(KeyEvent.VK_F);
         
@@ -236,11 +244,42 @@ public class MainFrame extends JFrame {
 		});
         
         fileMenu.add(exitItem);
-        menuBar.add(fileMenu);
-        menuBar.add(createEditMenu());
-        return menuBar;
+        
+        
+        mainMenuBar.add(fileMenu);
+        mainMenuBar.add(createEditMenu());
+        workshopMenuList = menuCreator.createWorkshopOperationsMenuItems((WorkshopProcessorConfig[]) config.getConfig("processorConfig"));
+        for (JMenu j : workshopMenuList) {
+        	mainMenuBar.add(j);
+        }
+        
+        return mainMenuBar;
     }
 
+    public ImageInternalFrame getCurrentImageInternalFrame() {
+		JInternalFrame[] frames = jdpDesktop.getAllFrames();
+		if (frames != null) {
+			ImageInternalFrame f = null;
+			for (JInternalFrame frame : frames) {
+				if (frame.isSelected()) {
+					f = (ImageInternalFrame) frame;
+					return f;
+				}
+			}
+		}
+		
+		return null;
+    }
+    
+    
+    public ImagePanel getCurrentImagePanel() {
+		ImageInternalFrame f = getCurrentImageInternalFrame();
+		if (f != null) {
+			return f.getImagePanel();
+		}
+		return null;
+    }
+    
     public ImageInternalFrame createFrame(String title) {
     	saveAsMenuItem.setEnabled(true);
     	
@@ -272,5 +311,14 @@ public class MainFrame extends JFrame {
 	public int getOpenedFrameNumber() {
 		return jdpDesktop.getAllFrames().length;
 	}
-
+	
+	public void updateProcessorActionWithPanel() {
+		for (JMenu j : workshopMenuList) {
+			mainMenuBar.remove(j);
+		}
+		workshopMenuList = menuCreator.createWorkshopOperationsMenuItems((WorkshopProcessorConfig[]) config.getConfig("processorConfig"));
+        for (JMenu j : workshopMenuList) {
+        	mainMenuBar.add(j);
+        }
+	}
 }

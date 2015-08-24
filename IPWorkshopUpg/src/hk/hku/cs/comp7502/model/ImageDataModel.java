@@ -3,11 +3,13 @@ package hk.hku.cs.comp7502.model;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 
+/**
+ * a data model that represents a gray level image
+ *  
+ * @author liuhongyuan
+ *
+ */
 public class ImageDataModel {
-	private String url;
-	
-	private String name;
-
 	private final byte[] byteArray;
 	
 	private int width;
@@ -31,6 +33,10 @@ public class ImageDataModel {
 		System.arraycopy(img, 0, this.byteArray, 0, img.length);
 	}
 	
+	/**
+	 * copy the data of bufferedimage to the image data model
+	 * @param bufImg
+	 */
 	public ImageDataModel(BufferedImage bufImg) {
 		this(bufImg.getWidth(), bufImg.getHeight(),  ((DataBufferByte) bufImg.getRaster().getDataBuffer()).getData());
 	}
@@ -74,7 +80,5 @@ public class ImageDataModel {
 	public byte[] getByteArray() {
 		return byteArray;
 	}
-	
-	
 	
 }

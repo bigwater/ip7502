@@ -1,0 +1,24 @@
+[
+{
+	"workshopName" : "workshop1",
+	"processors" : [
+		{
+			"name" : "Negative Transformation",
+			"clazz" : "hk.hku.cs.comp7502.workshop.NegativeTransformationProcessor",
+			"description" : ""
+		}, 
+		{
+	   		"name" : "Negative Transformation 2",
+			"clazz" : "hk.hku.cs.comp7502.workshop.NegativeTransformationProcessor"
+		}]
+},
+{
+	"workshopName" : "workshop2",
+	"processors" : [
+		{
+			"name" : "Box Filter",
+			"clazz" : "hk.hku.cs.comp7502.workshop.NegativeTransformationProcessor"
+		} ]
+}
+]
+

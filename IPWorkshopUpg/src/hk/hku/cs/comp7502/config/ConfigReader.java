@@ -7,16 +7,16 @@ import java.io.IOException;
 import com.google.gson.Gson;
 
 public class ConfigReader {
-	public static WorkshopConfig[] readWorkshopConfig() throws IOException {
+	public static WorkshopConfig[] readWorkshopImgConfig() throws IOException {
 		Gson gson = new Gson();
 		WorkshopConfig[] config = gson.fromJson(new FileReader(new File("resources/predefined_imgs.json")), WorkshopConfig[].class);
 		return config;
 	}
 	
-	public static void main(String[] args) throws Exception {
-		ConfigReader r = new ConfigReader();
-		WorkshopConfig[] config = r.readWorkshopConfig();
+	public static WorkshopProcessorConfig[] readWorkshopProcessorConfig() throws IOException {
 		Gson gson = new Gson();
-		System.out.println(gson.toJson(config));
+		WorkshopProcessorConfig[] config = gson.fromJson(new FileReader(new File("resources/image_processors.json")), WorkshopProcessorConfig[].class);
+		return config;
 	}
+	
 }

@@ -3,6 +3,7 @@ package hk.hku.cs.comp7502;
 import hk.hku.cs.comp7502.config.ConfigReader;
 import hk.hku.cs.comp7502.config.Configuration;
 import hk.hku.cs.comp7502.config.WorkshopConfig;
+import hk.hku.cs.comp7502.config.WorkshopProcessorConfig;
 import hk.hku.cs.comp7502.ui.MainFrame;
 
 import java.awt.Window;
@@ -48,8 +49,10 @@ public class Main {
 	public static void main(String[] args) {
 		Configuration config = new Configuration();
 		try {
-			WorkshopConfig[] wConfig = ConfigReader.readWorkshopConfig();
+			WorkshopConfig[] wConfig = ConfigReader.readWorkshopImgConfig();
+			WorkshopProcessorConfig[] pConfig = ConfigReader.readWorkshopProcessorConfig();
 			config.setConfig("workshopConfig", wConfig);
+			config.setConfig("processorConfig", pConfig);
 		} catch (IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null,

@@ -24,6 +24,7 @@ public class ImageProcessingWorker extends SwingWorker<ImageDataModel, Integer> 
 		this.name = name;
 	}
 	
+	
 	@Override
 	protected ImageDataModel doInBackground() throws Exception {
 		long start = System.nanoTime();
@@ -48,4 +49,15 @@ public class ImageProcessingWorker extends SwingWorker<ImageDataModel, Integer> 
 			e.printStackTrace();
 		}
 	}
+	
+	public ImagePanel getImagePanel() {
+		return imagePanel;
+	}
+
+	public void setImagePanel(ImagePanel imagePanel) {
+		this.imagePanel = imagePanel;
+	}
+
 }
+
+

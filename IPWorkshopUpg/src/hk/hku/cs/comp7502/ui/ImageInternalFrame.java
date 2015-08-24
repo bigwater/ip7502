@@ -43,22 +43,9 @@ public class ImageInternalFrame extends JInternalFrame {
 		
 		imagePanel.setAutoscrolls(true);
 		
-		JToolBar toolbar = new JToolBar();
-		JButton gegegeButton = new JButton("gegege");
-		toolbar.add(gegegeButton);
-		gegegeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ImageProcessingWorker worker = new ImageProcessingWorker("gege", new NegativeTransformationProcessor(), imagePanel);
-				worker.execute();
-			}
-		});
-		
 		setSize(300, 300);
 
 		getContentPane().add(scrollFrame, BorderLayout.CENTER);
-
-		add(toolbar, BorderLayout.NORTH);
 
 		setLocation(xPosition * openFrameCount, yPosition * openFrameCount);
 		
@@ -67,17 +54,19 @@ public class ImageInternalFrame extends JInternalFrame {
 		    	if (mainFrame.getOpenedFrameNumber() == 0) {
 		    		mainFrame.getSaveAsMenuItem().setEnabled(false);
 		    	}
+		    	mainFrame.updateProcessorActionWithPanel();
 		    }
 
 			@Override
 			public void internalFrameActivated(InternalFrameEvent e) {
 				mainFrame.refreshUndoAndRedo(undoManager);
+				mainFrame.updateProcessorActionWithPanel();
 			}
 			
 			@Override
 			public void internalFrameOpened(InternalFrameEvent e) {
 				mainFrame.refreshUndoAndRedo(undoManager);
-				System.out.println("opened");
+				mainFrame.updateProcessorActionWithPanel();
 			}
 			
 			@Override

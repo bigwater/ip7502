@@ -1,9 +1,12 @@
 package hk.hku.cs.comp7502.ui.util;
 
+import hk.hku.cs.comp7502.config.ProcessorConfig;
 import hk.hku.cs.comp7502.config.WorkshopConfig;
 import hk.hku.cs.comp7502.config.WorkshopImageConfig;
+import hk.hku.cs.comp7502.config.WorkshopProcessorConfig;
 import hk.hku.cs.comp7502.ui.ImageInternalFrame;
 import hk.hku.cs.comp7502.ui.MainFrame;
+import hk.hku.cs.comp7502.ui.ProcessorAction;
 import hk.hku.cs.comp7502.worker.OpenFileWorker;
 
 import java.awt.event.ActionEvent;
@@ -12,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -57,5 +61,25 @@ public class MenuCreator {
 		}
 
 		return menuItems;
+	}
+	
+	public List<JMenu> createWorkshopOperationsMenuItems(WorkshopProcessorConfig[] procConfig) {
+		List<JMenu> menuList = new ArrayList<JMenu> ();
+		for (WorkshopProcessorConfig pc : procConfig) {
+			JMenu menu = new JMenu(pc.getWorkshopName());
+			for (ProcessorConfig p : pc.getProcessors()) {
+				JMenuItem item = new JMenuItem(p.getName());
+				ProcessorAction listener = new ProcessorAction();
+				listener.setProcessor(p.getImageProcessor());
+				listener.setProcessorName(p.getName());
+				listener.setPanel(mainFrame.getCurrentImagePanel());
+				item.addActionListener(listener);
+				//itemActionMap.put(item, listener);
+				menu.add(item);
+				//item.setEnabled(false);
+			}
+			menuList.add(menu);
+		}
+		return menuList;
 	}
 }
