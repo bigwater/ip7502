@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingWorker;
@@ -16,9 +17,7 @@ public class OpenFileWorker extends SwingWorker<BufferedImage, Integer> {
 	private URL url;
 	private ImageInternalFrame parentFrame;
 
-	private BufferedImage img;
-
-	private long timeConsumed = 0;
+	private double timeConsumed = 0;
 	
 	public OpenFileWorker(URL url, ImageInternalFrame parentFrame) {
 		this.url = url;
@@ -27,12 +26,12 @@ public class OpenFileWorker extends SwingWorker<BufferedImage, Integer> {
 
 	@Override
 	protected BufferedImage doInBackground() throws Exception {
-		long startTime = System.currentTimeMillis();
+		
+		long start = System.nanoTime();
 		BufferedImage bufImage = null;
 
 		try {
 			bufImage = ImageIO.read(url);
-			img = colorToGray(bufImage);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -40,12 +39,11 @@ public class OpenFileWorker extends SwingWorker<BufferedImage, Integer> {
 		}
 
 		if (bufImage != null) {
+			double seconds = (System.nanoTime() - start) / 1000000000.0;
+			timeConsumed = seconds;
 			return colorToGray(bufImage);
 		}
 
-		long endTime = System.currentTimeMillis();
-		timeConsumed = endTime - startTime;
-		
 		return null;
 	}
 
@@ -60,11 +58,18 @@ public class OpenFileWorker extends SwingWorker<BufferedImage, Integer> {
 	@Override
 	protected void done() {
 		// Executed on the Event Dispatch Thread after the doInBackground method is finished.
+		BufferedImage img = null;
+		try {
+			img = get();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+		
 		if (img == null) {
 			parentFrame.getImgStatusLabel().setText("the url is not accessible");
 		} else {
 			ImagePanel parentImagePanel = parentFrame.getImagePanel();
-			parentFrame.getImgStatusLabel().setText("load time consumed = " + timeConsumed + " milliseconds");
+			parentFrame.getImgStatusLabel().setText(String.format("load time consumed = %.8f seconds", timeConsumed));
 			//double defaultHeight = parentFrame.getImgStatusField().getSize().getHeight();
 			//parentFrame.getImgStatusField().setSize(parentFrame.getSize().width-5, (int) defaultHeight);
 			parentImagePanel.setBufImg(img);
@@ -72,7 +77,6 @@ public class OpenFileWorker extends SwingWorker<BufferedImage, Integer> {
 			//parentImagePanel.repaint();
 		}
 	}
-
 }
 
 

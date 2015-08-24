@@ -1,6 +1,7 @@
 package hk.hku.cs.comp7502;
 
 import hk.hku.cs.comp7502.config.ConfigReader;
+import hk.hku.cs.comp7502.config.Configuration;
 import hk.hku.cs.comp7502.config.WorkshopConfig;
 import hk.hku.cs.comp7502.ui.MainFrame;
 
@@ -45,8 +46,10 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
+		Configuration config = new Configuration();
 		try {
 			WorkshopConfig[] wConfig = ConfigReader.readWorkshopConfig();
+			config.setConfig("workshopConfig", wConfig);
 		} catch (IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null,
@@ -72,8 +75,7 @@ public class Main {
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				new MainFrame();
-				// new JInternalFrameDemo();
+				new MainFrame(config);
 			}
 		});
 
