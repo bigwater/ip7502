@@ -1,11 +1,15 @@
 package hk.hku.cs.comp7502;
 
+import hk.hku.cs.comp7502.config.ConfigReader;
+import hk.hku.cs.comp7502.config.WorkshopConfig;
 import hk.hku.cs.comp7502.ui.MainFrame;
 
 import java.awt.Window;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -41,6 +45,17 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
+		try {
+			WorkshopConfig[] wConfig = ConfigReader.readWorkshopConfig();
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,
+				    "Cannot find workshop config",
+				    "ERROR",
+				    JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		}
+		
 		try {
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Test");

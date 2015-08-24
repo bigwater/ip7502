@@ -6,6 +6,12 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>resources</directory>
+			</resource>
+		</resources>
+		
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -38,13 +44,6 @@
 				</executions>
 			</plugin>
 		</plugins>
-
-		<resources>
-			<resource>
-				<directory>resources</directory>
-			</resource>
-		</resources>
-
 	</build>
 
 	<dependencies>

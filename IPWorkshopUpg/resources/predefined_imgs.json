@@ -1,0 +1,28 @@
+[
+{
+	"workshopName" : "workshop1",
+	"images" : [
+		{
+			"name" : "Lena",
+			"url" : "http://www.cs.hku.hk/~sdirk/lenna.png",
+			"description" : ""
+		}, 
+		{
+	   		"name" : "Lena small",
+	    	"url" : "http://www.cs.hku.hk/~sdirk/lenna_small.png"
+		}]
+},
+{
+	"workshopName" : "workshop2",
+	"images" : [
+		{
+			"name" : "SEM",
+			"url" : "http://www.cs.hku.hk/~sdirk/SEM.png"
+		}, 
+		{
+	   		"name" : "SEM small",
+	    	"url" : "http://www.cs.hku.hk/~sdirk/SEM_small.png"
+		}]
+}
+]
+
