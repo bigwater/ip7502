@@ -8,10 +8,10 @@ public class ImageDataModel {
 	
 	private String name;
 
-	private final byte[] img;
+	private final byte[] byteArray;
 	
-	public final int width;
-	public final int height;
+	private int width;
+	private int height;
 	
 	/**
 	 * The constructor will copy the img byte
@@ -27,18 +27,54 @@ public class ImageDataModel {
 		this.width = width;
 		this.height = height;
 		
-		this.img = new byte[img.length];
-		System.arraycopy(img, 0, this.img, 0, img.length);
+		this.byteArray = new byte[img.length];
+		System.arraycopy(img, 0, this.byteArray, 0, img.length);
+	}
+	
+	public ImageDataModel(BufferedImage bufImg) {
+		this(bufImg.getWidth(), bufImg.getHeight(),  ((DataBufferByte) bufImg.getRaster().getDataBuffer()).getData());
 	}
 	
 	/**
-	 * convert the image data to BufferedImage
+	 * convert the image data to BufferedImage,
+	 * this method will copy data
 	 * @return
 	 */
 	public BufferedImage toBufferedImage() {
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
 		byte[] array = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-		System.arraycopy(img, 0, array, 0, array.length);
+		System.arraycopy(byteArray, 0, array, 0, array.length);
 		return image;
 	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+	
+	public byte getPixel(int x, int y) {
+		return byteArray[x * width + y];
+	}
+	
+	public void setPixel(int x, int y, byte val) {
+		byteArray[x * width + y] = val;
+	}
+
+	public byte[] getByteArray() {
+		return byteArray;
+	}
+	
+	
+	
 }

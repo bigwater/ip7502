@@ -25,7 +25,7 @@ public class ImagePanel extends JPanel implements StateEditable {
 	static final String IMAGE_PANEL_STATE_KEY = "ImageKey";
 	private BufferedImage bufImg;
 
-	UndoableEditSupport undoableEditSupport = new UndoableEditSupport(this);
+	private UndoableEditSupport undoableEditSupport = new UndoableEditSupport(this);
 
 	public void addUndoableEditListener(UndoableEditListener undoableEditListener) {
 		undoableEditSupport.addUndoableEditListener(undoableEditListener);
@@ -81,14 +81,12 @@ public class ImagePanel extends JPanel implements StateEditable {
 
 	@Override
 	public void storeState(Hashtable<Object, Object> state) {
-		//System.out.println("store state");
 		state.put(IMAGE_PANEL_STATE_KEY, new ImageDataModel(bufImg.getWidth(), bufImg.getHeight(), ImageConverter.toByteArray(bufImg)));
 		mainFrame.refreshUndoAndRedo(parent.getUndoManager());
 	}
 
 	@Override
 	public void restoreState(Hashtable<?, ?> state) {
-		//System.out.println("restore state");
 		ImageDataModel storedImg = (ImageDataModel) state.get(IMAGE_PANEL_STATE_KEY);
 		if (storedImg != null) {
 			bufImg = storedImg.toBufferedImage();
@@ -96,7 +94,22 @@ public class ImagePanel extends JPanel implements StateEditable {
 		}
 		mainFrame.refreshUndoAndRedo(parent.getUndoManager());
 	}
+
+	public UndoableEditSupport getUndoableEditSupport() {
+		return undoableEditSupport;
+	}
+
+	public void setUndoableEditSupport(UndoableEditSupport undoableEditSupport) {
+		this.undoableEditSupport = undoableEditSupport;
+	}
 	
+	public void refreshUndoAndRedo() {
+		mainFrame.refreshUndoAndRedo(parent.getUndoManager());
+	}
+
+	public void updateStatusBar(String text) {
+		mainFrame.getImgStatusLabel().setText(text);
+	}
 }
 
 

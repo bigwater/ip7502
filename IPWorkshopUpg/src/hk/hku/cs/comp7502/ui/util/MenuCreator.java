@@ -1,10 +1,10 @@
 package hk.hku.cs.comp7502.ui.util;
 
-import hk.hku.cs.comp7502.command.OpenFileWorker;
 import hk.hku.cs.comp7502.config.WorkshopConfig;
 import hk.hku.cs.comp7502.config.WorkshopImageConfig;
 import hk.hku.cs.comp7502.ui.ImageInternalFrame;
 import hk.hku.cs.comp7502.ui.MainFrame;
+import hk.hku.cs.comp7502.worker.OpenFileWorker;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

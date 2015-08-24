@@ -1,4 +1,4 @@
-package hk.hku.cs.comp7502.command;
+package hk.hku.cs.comp7502.worker;
 
 import hk.hku.cs.comp7502.ui.ImageInternalFrame;
 import hk.hku.cs.comp7502.ui.ImagePanel;

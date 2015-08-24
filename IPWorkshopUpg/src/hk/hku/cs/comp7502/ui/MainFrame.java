@@ -1,10 +1,11 @@
 package hk.hku.cs.comp7502.ui;
 
-import hk.hku.cs.comp7502.command.OpenFileWorker;
 import hk.hku.cs.comp7502.config.Configuration;
 import hk.hku.cs.comp7502.config.WorkshopConfig;
 import hk.hku.cs.comp7502.ui.util.MenuCreator;
 import hk.hku.cs.comp7502.util.NativeUIUtils;
+import hk.hku.cs.comp7502.worker.OpenFileWorker;
+import hk.hku.cs.comp7502.worker.SaveFileWorker;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -21,6 +22,7 @@ import java.util.List;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -45,7 +47,7 @@ public class MainFrame extends JFrame {
 	private MenuCreator menuCreator;
 	private Configuration config = null;
 	
-	private JMenuItem undoItem, redoItem;
+	private JMenuItem undoItem, redoItem, saveAsMenuItem;
 	
 	public MainFrame(Configuration config) {
 		this.config = config;
@@ -188,12 +190,60 @@ public class MainFrame extends JFrame {
         	fileMenu.add(item);
         }
         
+        fileMenu.addSeparator();
+        saveAsMenuItem = new JMenuItem("Save As...");
+        fileMenu.add(saveAsMenuItem);
+        saveAsMenuItem.setEnabled(false);
+        saveAsMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JInternalFrame[] frames = jdpDesktop.getAllFrames();
+				ImageInternalFrame f = null;
+				for (JInternalFrame frame : frames) {
+					if (frame.isSelected()) {
+						f = (ImageInternalFrame) frame;
+						break;
+					}
+				}
+				
+				if (f == null) {
+					saveAsMenuItem.setEnabled(false);
+					return;
+				}
+				
+				JFileChooser jFileChooser = new JFileChooser();
+        		jFileChooser.setCurrentDirectory(new File("~"));
+        		int result = jFileChooser.showSaveDialog(MainFrame.this);
+        		
+        		if (result == JFileChooser.APPROVE_OPTION) {
+        			File fileToSave = jFileChooser.getSelectedFile();
+					String url = fileToSave.getAbsolutePath();
+					SaveFileWorker worker = new SaveFileWorker(url, f.getImagePanel().getBufImg(), f.getImagePanel());
+					worker.execute();
+        		}
+				
+			}
+		});
+        
+        fileMenu.addSeparator();
+        
+        JMenuItem exitItem = new JMenuItem("Exit");
+        exitItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+        
+        fileMenu.add(exitItem);
         menuBar.add(fileMenu);
         menuBar.add(createEditMenu());
         return menuBar;
     }
 
     public ImageInternalFrame createFrame(String title) {
+    	saveAsMenuItem.setEnabled(true);
+    	
     	openedImageNumber++;
         ImageInternalFrame fr = new ImageInternalFrame(title, openedImageNumber, this);
         jdpDesktop.add(fr);
@@ -213,6 +263,14 @@ public class MainFrame extends JFrame {
 	
 	public void setImgStatusLabel(JLabel imgStatusLabel) {
 		this.imgStatusLabel = imgStatusLabel;
+	}
+	
+	public JMenuItem getSaveAsMenuItem() {
+		return saveAsMenuItem;
+	}
+	
+	public int getOpenedFrameNumber() {
+		return jdpDesktop.getAllFrames().length;
 	}
 
 }

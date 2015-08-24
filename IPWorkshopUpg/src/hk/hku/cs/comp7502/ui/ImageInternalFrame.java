@@ -1,5 +1,8 @@
 package hk.hku.cs.comp7502.ui;
 
+import hk.hku.cs.comp7502.worker.ImageProcessingWorker;
+import hk.hku.cs.comp7502.workshop.NegativeTransformationProcessor;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -12,7 +15,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-import javax.swing.undo.StateEdit;
 import javax.swing.undo.UndoManager;
 
 public class ImageInternalFrame extends JInternalFrame {
@@ -24,6 +26,7 @@ public class ImageInternalFrame extends JInternalFrame {
 
 	private MainFrame mainFrame;
 	private UndoManager undoManager;
+	
 	public ImageInternalFrame(String imageName, int openFrameCount, MainFrame mainFrame) {
 		super(imageName, true, // resizable
 				true, // closable
@@ -46,16 +49,8 @@ public class ImageInternalFrame extends JInternalFrame {
 		gegegeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-		        StateEdit stateEdit = new StateEdit(imagePanel);
-				for (int i = 0; i < 100; i++) {
-					for (int j = 0; j < 100; j++) {
-						imagePanel.getBufImg().setRGB(i, j, 0);
-					}
-				}
-		        stateEdit.end();
-		        imagePanel.repaint();
-		        imagePanel.undoableEditSupport.postEdit(stateEdit);			
-		        mainFrame.refreshUndoAndRedo(undoManager);
+				ImageProcessingWorker worker = new ImageProcessingWorker("gege", new NegativeTransformationProcessor(), imagePanel);
+				worker.execute();
 			}
 		});
 		
@@ -69,13 +64,13 @@ public class ImageInternalFrame extends JInternalFrame {
 		
 		addInternalFrameListener(new InternalFrameAdapter() {
 		    public void internalFrameClosed(InternalFrameEvent e) {
-		    	mainFrame.setEnableUndoRedo(false, false);
+		    	if (mainFrame.getOpenedFrameNumber() == 0) {
+		    		mainFrame.getSaveAsMenuItem().setEnabled(false);
+		    	}
 		    }
 
 			@Override
 			public void internalFrameActivated(InternalFrameEvent e) {
-				//System.out.println("activated");
-				//mainFrame.getImgStatusLabel().setText("");
 				mainFrame.refreshUndoAndRedo(undoManager);
 			}
 			
@@ -99,11 +94,6 @@ public class ImageInternalFrame extends JInternalFrame {
 		return imagePanel;
 	}
 
-	public void setImagePanel(ImagePanel imagePanel) {
-		this.imagePanel = imagePanel;
-	}
-
-	
 	public JLabel getImgStatusLabel() {
 		return mainFrame.getImgStatusLabel();
 	}
