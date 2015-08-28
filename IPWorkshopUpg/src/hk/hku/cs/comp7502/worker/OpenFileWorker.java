@@ -70,11 +70,8 @@ public class OpenFileWorker extends SwingWorker<BufferedImage, Integer> {
 		} else {
 			ImagePanel parentImagePanel = parentFrame.getImagePanel();
 			parentFrame.getImgStatusLabel().setText(String.format("load time consumed = %.8f seconds", timeConsumed));
-			//double defaultHeight = parentFrame.getImgStatusField().getSize().getHeight();
-			//parentFrame.getImgStatusField().setSize(parentFrame.getSize().width-5, (int) defaultHeight);
 			parentImagePanel.setBufImg(img);
 			parentFrame.repaint();
-			//parentImagePanel.repaint();
 		}
 	}
 }

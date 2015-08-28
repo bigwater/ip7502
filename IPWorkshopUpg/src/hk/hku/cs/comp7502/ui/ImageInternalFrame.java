@@ -1,18 +1,11 @@
 package hk.hku.cs.comp7502.ui;
 
-import hk.hku.cs.comp7502.worker.ImageProcessingWorker;
-import hk.hku.cs.comp7502.workshop.NegativeTransformationProcessor;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.undo.UndoManager;
@@ -43,8 +36,6 @@ public class ImageInternalFrame extends JInternalFrame {
 		
 		imagePanel.setAutoscrolls(true);
 		
-		setSize(300, 300);
-
 		getContentPane().add(scrollFrame, BorderLayout.CENTER);
 
 		setLocation(xPosition * openFrameCount, yPosition * openFrameCount);

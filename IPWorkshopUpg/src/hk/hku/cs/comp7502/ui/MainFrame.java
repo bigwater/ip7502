@@ -17,10 +17,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
@@ -37,22 +34,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.undo.UndoManager;
 
 public class MainFrame extends JFrame {
-	
-	private int openedImageNumber = 0;
-	
     private JDesktopPane jdpDesktop;
-    
 	private JLabel imgStatusLabel = new JLabel();
-
 	private static final long serialVersionUID = 3204111789442234205L;
-	List<ImageInternalFrame> imageDocumentList = new ArrayList<> ();
-	
 	private MenuCreator menuCreator;
 	private Configuration config = null;
-	
 	private JMenuItem undoItem, redoItem, saveAsMenuItem;
-	List<JMenu> workshopMenuList;
-	Map<JMenuItem, ProcessorAction> menuItemActionMap;
+	private List<JMenu> workshopMenuList;
 	
 	private JMenuBar mainMenuBar;
 	public MainFrame(Configuration config) {
@@ -68,7 +56,6 @@ public class MainFrame extends JFrame {
         add(jdpDesktop, BorderLayout.CENTER);
         
         add(imgStatusLabel, BorderLayout.SOUTH);
-		
 
         if (System.getProperty("os.name").startsWith("Mac OS X")) {
         	NativeUIUtils.enableOSXFullscreen(this);
@@ -173,16 +160,16 @@ public class MainFrame extends JFrame {
 				}
 				
 				OpenFileWorker worker = null;
-				ImageInternalFrame imgFrame = createFrame(urlString);
+				ImageInternalFrame imgFrame = null;
 				try {
 					worker = new OpenFileWorker(new URL(urlString), imgFrame);
 					worker.execute();
+					imgFrame = createFrame(urlString);
 				} catch (MalformedURLException e1) {
 					JOptionPane.showMessageDialog(MainFrame.this,
 						    "The URL is not supported",
 						    "Open Image",
 						    JOptionPane.WARNING_MESSAGE);
-					imgFrame.dispose();
 					e1.printStackTrace();
 				}
 
@@ -283,8 +270,7 @@ public class MainFrame extends JFrame {
     public ImageInternalFrame createFrame(String title) {
     	saveAsMenuItem.setEnabled(true);
     	
-    	openedImageNumber++;
-        ImageInternalFrame fr = new ImageInternalFrame(title, openedImageNumber, this);
+        ImageInternalFrame fr = new ImageInternalFrame(title, getOpenedFrameNumber(), this);
         jdpDesktop.add(fr);
         
         try {
@@ -294,6 +280,11 @@ public class MainFrame extends JFrame {
         }
         
         return fr;
+    }
+    
+    public int getOpenedImageNumber() {
+    	JInternalFrame[] allFrames = jdpDesktop.getAllFrames();
+    	return allFrames == null ? 0 : allFrames.length;
     }
     
 	public JLabel getImgStatusLabel() {
