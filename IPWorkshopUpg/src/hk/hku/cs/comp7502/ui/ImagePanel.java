@@ -119,6 +119,10 @@ public class ImagePanel extends JPanel implements StateEditable {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		if (bufImg != null) {
 			g2d.drawImage(bufImg, xBase, yBase, null);
+			
+			
+			//PointMarker.markPoint(g2d, arr, xBase, yBase);   mark point; to be used later
+			
 			if (showAxis) {
 				g2d.setColor(new Color(255, 0, 0));
 				drawArrow(g2d, xBase, yBase, bufImg.getWidth() + 30 + yBase, yBase);
